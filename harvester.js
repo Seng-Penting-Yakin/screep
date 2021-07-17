@@ -4,8 +4,6 @@ class Harvester {
     }
 
     run() {
-        console.log("run from class")
-        this.chooseTargetResource();
 
         if (this.creep.memory.working)
             this.work();
@@ -14,55 +12,66 @@ class Harvester {
     }
 
     work() {
-        this.creep.memory.storeTargetPath = "[]";
-        this.findPathToResource();
-        var parsedSpawnToResource = JSON.parse(this.creep.memory.spawnToResource);
-        var targetResource = Game.getObjectById(this.creep.memory.targetResource);
+        this.creep.memory.pathToStorage = "[]";
+        let resourceAndPath = this.findResourceAndPath();
+        let pathToResource = resourceAndPath.path
+        let targetResource = resourceAndPath.target
 
-        if (this.creep.harvest(targetResource) == ERR_NOT_IN_RANGE) {
-            this.creep.move(parsedSpawnToResource[0].direction)
-            parsedSpawnToResource.shift();
-            var stringifySpawnToResource = JSON.stringify(parsedSpawnToResource);
-            this.creep.memory.spawnToResource = stringifySpawnToResource;
+        if (this.creep.harvest(targetResource) === ERR_NOT_IN_RANGE) {
+            this.creep.move(pathToResource[0].direction)
+            pathToResource.shift()
+            this.creep.memory.spawnToResource = JSON.stringify(pathToResource);
         }
     }
 
     carry() {
         this.creep.memory.spawnToResource = "[]";
-        this.findPathToStorage(this.creep);
-        var parsedStoreTargetPath = JSON.parse(this.creep.memory.storeTargetPath)
-        console.log("creepnotworking");
-        this.creep.moveByPath(parsedStoreTargetPath);
-        console.log(parsedStoreTargetPath);
+        let storageAndPath = this.findStorageAndPath(this.creep);
+        let storagePath = storageAndPath.path
+        let targetStorage = storageAndPath.target
+
         for (const resourceType in this.creep.carry) {
-            console.log(Game.getObjectById(this.creep.memory.storeTarget));
-            this.creep.transfer(Game.getObjectById(this.creep.memory.storeTarget), resourceType);
+            if (this.creep.transfer(targetStorage, resourceType) === ERR_NOT_IN_RANGE)
+                this.creep.moveByPath(storagePath);
         }
     }
 
-    chooseTargetResource() {
-        if (!this.creep.memory.targetResource) {
-            this.creep.memory.targetResource = this.creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE).id;
-        }
-    }
 
-    findPathToResource() {
+    findResourceAndPath() {
+        this.chooseTargetResource();
         if (this.creep.memory.spawnToResource === undefined) this.creep.memory.spawnToResource = "[]"
 
-        var parsed = JSON.parse(this.creep.memory.spawnToResource);
-        if (parsed.length === 0) {
-            const targetResource = Game.getObjectById(this.creep.memory.targetResource);
+        let spawnToResourcePath = JSON.parse(this.creep.memory.spawnToResource);
+        const targetResource = Game.getObjectById(this.creep.memory.targetResource);
+
+        if (spawnToResourcePath.length === 0) {
             const pathToTarget = this.creep.pos.findPathTo(targetResource);
             this.creep.memory.spawnToResource = JSON.stringify(pathToTarget);
         }
+        return {
+            path: JSON.parse(this.creep.memory.spawnToResource),
+            target: targetResource
+        }
     }
 
-    findPathToStorage() {
+    findStorageAndPath() {
+        this.findStorageStructure();
+        const targetStorage = Game.getObjectById(this.creep.memory.storeTarget);
 
-        // creep.memory.storeTargetPath = "[]";
-        var myStructures = this.creep.room.find(FIND_MY_STRUCTURES, {
+        if (!this.creep.memory.pathToStorage || JSON.parse(this.creep.memory.pathToStorage).length === 0) {
+            const pathToTarget = this.creep.pos.findPathTo(targetStorage);
+            this.creep.memory.pathToStorage = JSON.stringify(pathToTarget);
+        }
+
+        return {
+            path: JSON.parse(this.creep.memory.pathToStorage),
+            target: targetStorage
+        }
+    }
+
+    findStorageStructure() {
+        let myStructures = this.creep.room.find(FIND_MY_STRUCTURES, {
             filter: function (object) {
-                console.log(object)
                 if (object.store != null) {
                     console.log(object.store.getCapacity(RESOURCE_ENERGY));
                 }
@@ -70,18 +79,14 @@ class Harvester {
                 return object.store != null;
             }
         });
+        this.creep.memory.storeTarget = myStructures[0].id;
 
-        if (this.creep.memory.storeTarget) {
-            this.creep.memory.storeTarget = myStructures[0].id;
-        }
-        if (this.creep.memory.storeTargetPath || JSON.parse(this.creep.memory.storeTargetPath).length == 0) {
-            const targetStorage = Game.getObjectById(this.creep.memory.storeTarget);
-            const pathToTarget = this.creep.pos.findPathTo(targetStorage);
-            console.log(JSON.stringify(pathToTarget));
-            this.creep.memory.storeTargetPath = JSON.stringify(pathToTarget);
-        }
+    }
 
-        // console.log(myStructures);    }
+    chooseTargetResource() {
+        if (!this.creep.memory.targetResource) {
+            this.creep.memory.targetResource = this.creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE).id;
+        }
     }
 }
 
