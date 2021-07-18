@@ -41,12 +41,15 @@ module.exports = {
 
 
         if (roomMemory.roleCap[role] > roomMemory.roleCount[role]) {
-            let spawnCreep = spawn.spawnCreep([MOVE, WORK, CARRY], role + roomMemory.roleCount[role], {
-                memory: {
-                    role: role,
-                    isCarryEmpty: true
-                },
-            })
+            let spawnCreep = spawn.spawnCreep([MOVE, WORK, CARRY],
+                role + room.name + Game.time,
+                {
+                    memory: {
+                        role: role,
+                        isCarryEmpty: true
+                    },
+                }
+            )
 
             if (spawnCreep === 0) {
                 roomMemory.roleCount[role] += 1
