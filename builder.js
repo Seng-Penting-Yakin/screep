@@ -4,7 +4,7 @@ class Builder {
     }
 
     run() {
-        if (this.creep.memory.working)
+        if (this.creep.memory.isCarryEmpty)
             this.fetchResources();
         else
             this.buildOrRepair();

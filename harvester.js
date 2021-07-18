@@ -5,13 +5,13 @@ class Harvester {
 
     run() {
 
-        if (this.creep.memory.working)
-            this.work();
+        if (this.creep.memory.isCarryEmpty)
+            this.harvestResource();
         else
             this.carry();
     }
 
-    work() {
+    harvestResource() {
         this.creep.memory.pathToStorage = "[]";
         let resourceAndPath = this.findResourceAndPath();
         let pathToResource = resourceAndPath.path

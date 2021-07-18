@@ -1,15 +1,15 @@
 module.exports = {
-    updateWorkingStatus: function (creep) {
+    updateCarryStatus: function (creep) {
         var creepStorage = creep.store;
         var memory = creep.memory;
 
-        if (creepStorage.getUsedCapacity() === 0 && !memory.working)
-            memory.working = true
+        if (creepStorage.getUsedCapacity() === 0 && !memory.isCarryEmpty)
+            memory.isCarryEmpty = true
 
-        else if (creepStorage.getFreeCapacity() === 0 && memory.working)
-            memory.working = false;
+        else if (creepStorage.getFreeCapacity() === 0 && memory.isCarryEmpty)
+            memory.isCarryEmpty = false;
 
-        creep.memory.working = memory.working;
+        creep.memory.isCarryEmpty = memory.isCarryEmpty;
     },
     cleanCreepMemory() {
         for (let name in Memory.creeps) {
@@ -30,7 +30,7 @@ module.exports = {
 
             var roleCreep = new CreepClass(creep);
 
-            this.updateWorkingStatus(creep);
+            this.updateCarryStatus(creep);
 
             creep.memory.room = creep.room.name;
 
