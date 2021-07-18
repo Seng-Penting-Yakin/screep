@@ -68,7 +68,8 @@ class Builder {
 
     findStorageStructure() {
         let nearestConstructionSite = this.creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)
-        this.creep.memory.constructionSiteTarget = nearestConstructionSite.id;
+        if (nearestConstructionSite)
+            this.creep.memory.constructionSiteTarget = nearestConstructionSite.id;
 
     }
 
