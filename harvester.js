@@ -72,9 +72,9 @@ class Harvester {
     findStorageStructure() {
         let myStructures = this.creep.room.find(FIND_MY_STRUCTURES, {
             filter: function (object) {
-                if (object.store != null) {
-                    console.log(object.store.getCapacity(RESOURCE_ENERGY));
-                }
+                // if (object.store != null) {
+                //     console.log(object.store.getCapacity(RESOURCE_ENERGY));
+                // }
 
                 return object.store != null;
             }
