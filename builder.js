@@ -31,6 +31,9 @@ class Builder {
 
         if (this.creep.build(targetConstruction) === ERR_NOT_IN_RANGE)
             this.creep.moveByPath(constructionPath);
+
+        if (this.creep.repair(targetConstruction) === ERR_NOT_IN_RANGE)
+            this.creep.moveByPath(constructionPath);
     }
 
 
@@ -52,7 +55,7 @@ class Builder {
     }
 
     findConstructionAndPath() {
-        this.findStorageStructure();
+        this.findConstructionStructure();
         const targetStorage = Game.getObjectById(this.creep.memory.constructionSiteTarget);
 
         if (!this.creep.memory.pathToConstructionSite || JSON.parse(this.creep.memory.pathToConstructionSite).length === 0) {
@@ -66,11 +69,49 @@ class Builder {
         }
     }
 
-    findStorageStructure() {
+    findConstructionStructure() {
         let nearestConstructionSite = this.creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)
-        if (nearestConstructionSite)
+        if (nearestConstructionSite) {
             this.creep.memory.constructionSiteTarget = nearestConstructionSite.id;
+            return;
+        }
 
+        nearestConstructionSite = this.findMyBrokenStructure()
+        if (nearestConstructionSite.length > 0) {
+            this.creep.memory.constructionSiteTarget = nearestConstructionSite[0].id
+            return;
+        }
+
+        nearestConstructionSite = this.findBrokenRoadAndContainer()
+        if (nearestConstructionSite.length > 0) {
+            console.log("broken road -> " + nearestConstructionSite[0].id)
+            this.creep.memory.constructionSiteTarget = nearestConstructionSite[0].id
+        }
+
+    }
+
+    findMyBrokenStructure() {
+        return this.creep.room.find(FIND_MY_STRUCTURES, {
+            filter: function (structure) {
+                if (structure.structureType === STRUCTURE_CONTROLLER) return;
+                return structure.hits < structure.hitsMax
+            }
+        });
+    }
+
+    findBrokenRoadAndContainer() {
+        return this.creep.room.find(FIND_STRUCTURES, {
+            filter: function (structure) {
+                let type = structure.structureType
+
+                if (!(type === STRUCTURE_ROAD)) return;
+
+                console.log(type + " -> " + structure.hits + "/" + structure.hitsMax)
+
+
+                return structure.hits < structure.hitsMax
+            }
+        });
     }
 
     chooseTargetResource() {
