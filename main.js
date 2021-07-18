@@ -7,8 +7,8 @@ var spawnHandler = require('spawnHandler');
 
 module.exports.loop = function () {
     //handle creep works
+    spawnHandler.handle();
     creepHandler.handle();
 
-    spawnHandler.handle();
 }
 

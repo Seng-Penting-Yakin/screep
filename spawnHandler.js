@@ -36,6 +36,7 @@ module.exports = {
 
         }
     },
+
     spawnByRole: function (spawn, role) {
         let room = spawn.room
         let roomMemory = room.memory

@@ -11,6 +11,7 @@ module.exports = {
 
         creep.memory.isCarryEmpty = memory.isCarryEmpty;
     },
+
     cleanCreepMemory() {
         for (let name in Memory.creeps) {
             if (Game.creeps[name] === undefined) {
