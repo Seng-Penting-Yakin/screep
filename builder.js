@@ -84,7 +84,6 @@ class Builder {
 
         nearestConstructionSite = this.findBrokenRoadAndContainer()
         if (nearestConstructionSite.length > 0) {
-            console.log("broken road -> " + nearestConstructionSite[0].id)
             this.creep.memory.constructionSiteTarget = nearestConstructionSite[0].id
         }
 
@@ -104,10 +103,7 @@ class Builder {
             filter: function (structure) {
                 let type = structure.structureType
 
-                if (!(type === STRUCTURE_ROAD)) return;
-
-                console.log(type + " -> " + structure.hits + "/" + structure.hitsMax)
-
+                if (!(type === STRUCTURE_ROAD || type === STRUCTURE_CONTAINER)) return;
 
                 return structure.hits < structure.hitsMax
             }
