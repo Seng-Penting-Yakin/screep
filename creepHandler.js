@@ -14,6 +14,13 @@ module.exports = {
     cleanCreepMemory() {
         for (let name in Memory.creeps) {
             if (Game.creeps[name] === undefined) {
+                let memory = Memory.creeps[name]
+
+                let roleCountMemory = Game.rooms[memory.room].memory.roleCount
+
+                if (roleCountMemory)
+                    roleCountMemory[memory.role] -= 1;
+
                 delete Memory.creeps[name];
             }
         }
