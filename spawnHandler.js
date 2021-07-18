@@ -32,6 +32,7 @@ module.exports = {
 
             this.spawnByRole(spawn, 'harvester')
             this.spawnByRole(spawn, 'builder')
+            this.spawnByRole(spawn, 'upgrader')
 
         }
     },
